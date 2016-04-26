@@ -3,15 +3,19 @@ FROM debian:jessie
 ENV DOVECOT_VERSION 2.2.24
 ENV DOVECOT_TGZ_URL http://dovecot.org/releases/2.2/dovecot-$DOVECOT_VERSION.tar.gz
 ENV DOVECOT_GNUPG_KEY 40558AC9
+ENV PIGEONHOLE_VERSION 0.4.14
+ENV PIGEONHOLE_TGZ_URL http://pigeonhole.dovecot.org/releases/2.2/dovecot-2.2-pigeonhole-$PIGEONHOLE_VERSION.tar.gz
+ENV PIGEONHOLE_GNUPG_KEY 3DFBB4F4
 
 RUN installDeps='libsqlite3-0 libldap-2.4-2 libpam0g libexpat1 libssl1.0.0 libpq5 libmysqlclient18' \
     && buildDeps='wget build-essential libsqlite3-dev libldap2-dev libpam0g-dev libexpat1-dev libssl-dev libpq-dev libmysqlclient-dev' \
     && apt-get update \
     && apt-get install -y --no-install-recommends $installDeps $buildDeps \
-    && mkdir /usr/src/dovecot \
+    && gpg --keyserver ha.pool.sks-keyservers.net --recv-keys $DOVECOT_GNUPG_KEY \
+    && gpg --keyserver ha.pool.sks-keyservers.net --recv-keys $PIGEONHOLE_GNUPG_KEY \
+    && mkdir /usr/src/dovecot /usr/src/pigeonhole \
     && cd /usr/src/dovecot \
     && wget $DOVECOT_TGZ_URL $DOVECOT_TGZ_URL.sig \
-    && gpg --keyserver ha.pool.sks-keyservers.net --recv-keys $DOVECOT_GNUPG_KEY \
     && gpg --verify dovecot-$DOVECOT_VERSION.tar.gz.sig \
     && tar -xvf dovecot-$DOVECOT_VERSION.tar.gz --strip-components=1 \
     && ./configure \
@@ -22,8 +26,17 @@ RUN installDeps='libsqlite3-0 libldap-2.4-2 libpam0g libexpat1 libssl1.0.0 libpq
         --with-sql --with-ldap \
     && make -j"$(nproc)" \
     && make install \
+    && cd /usr/src/pigeonhole \
+    && wget $PIGEONHOLE_TGZ_URL $PIGEONHOLE_TGZ_URL.sig \
+    && gpg --verify dovecot-2.2-pigeonhole-$PIGEONHOLE_VERSION.tar.gz.sig \
+    && tar -xvf dovecot-2.2-pigeonhole-$PIGEONHOLE_VERSION.tar.gz --strip-components=1 \
+    && ./configure \
+        --sysconfdir=/etc \
+        --with-ldap=yes \
+    && make -j"$(nproc)" \
+    && make install \
     && cd / \
-    && rm -r /usr/src/dovecot \
+    && rm -r /usr/src/dovecot /usr/src/pigeonhole \
     && apt-get purge -y --auto-remove $buildDeps \
     && rm -r /var/lib/apt/lists/* \
     && groupadd -r dovecot \
@@ -34,4 +47,4 @@ RUN installDeps='libsqlite3-0 libldap-2.4-2 libpam0g libexpat1 libssl1.0.0 libpq
 COPY entrypoint.sh /entrypoint.sh
 
 ENTRYPOINT /entrypoint.sh
-EXPOSE 110 143 993 995
+EXPOSE 110 143 993 995 4190
