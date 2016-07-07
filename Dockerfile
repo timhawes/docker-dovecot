@@ -1,11 +1,11 @@
 FROM debian:jessie
 
-ENV DOVECOT_VERSION 2.2.24
+ENV DOVECOT_VERSION 2.2.25
 ENV DOVECOT_TGZ_URL http://dovecot.org/releases/2.2/dovecot-$DOVECOT_VERSION.tar.gz
-ENV DOVECOT_GNUPG_KEY 40558AC9
-ENV PIGEONHOLE_VERSION 0.4.14
+ENV DOVECOT_GNUPG_KEY C948525140558AC9
+ENV PIGEONHOLE_VERSION 0.4.15
 ENV PIGEONHOLE_TGZ_URL http://pigeonhole.dovecot.org/releases/2.2/dovecot-2.2-pigeonhole-$PIGEONHOLE_VERSION.tar.gz
-ENV PIGEONHOLE_GNUPG_KEY 3DFBB4F4
+ENV PIGEONHOLE_GNUPG_KEY 04D62B1E3DFBB4F4
 
 RUN installDeps='libsqlite3-0 libldap-2.4-2 libpam0g libexpat1 libssl1.0.0 libpq5 libmysqlclient18' \
     && buildDeps='wget build-essential libsqlite3-dev libldap2-dev libpam0g-dev libexpat1-dev libssl-dev libpq-dev libmysqlclient-dev' \
