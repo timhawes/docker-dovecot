@@ -7,7 +7,7 @@ ENV PIGEONHOLE_VERSION 0.4.17
 ENV PIGEONHOLE_TGZ_URL http://pigeonhole.dovecot.org/releases/2.2/dovecot-2.2-pigeonhole-$PIGEONHOLE_VERSION.tar.gz
 ENV PIGEONHOLE_GNUPG_KEY 04D62B1E3DFBB4F4
 
-RUN installDeps='libsqlite3-0 libldap-2.4-2 libpam0g libexpat1 libssl1.0.0 libpq5 libmysqlclient18' \
+RUN installDeps='ca-certificates libsqlite3-0 libldap-2.4-2 libpam0g libexpat1 libssl1.0.0 libpq5 libmysqlclient18' \
     && buildDeps='wget build-essential libsqlite3-dev libldap2-dev libpam0g-dev libexpat1-dev libssl-dev libpq-dev libmysqlclient-dev' \
     && apt-get update \
     && apt-get install -y --no-install-recommends $installDeps $buildDeps \
